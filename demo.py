@@ -57,12 +57,15 @@ A=sio.loadmat('Phantom_Data_Demo.mat')
 in_dic={}
 in_dic['input1']=torch.from_numpy(A['Im1']).cuda()
 in_dic['input2']=torch.from_numpy(A['Im2']).cuda()
+in_list = list([torch.from_numpy(A['Im1']).cuda(), torch.from_numpy(A['Im2']).cuda()])
 
 pwcnet.eval()
 
 with torch.no_grad():
     print("Running")
-    tmp=pwcnet(in_dic)['flow']
+    tmp=pwcnet(in_list)
+    #traced_model = torch.jit.trace(pwcnet, in_list)
+    #traced_model.save("traced_model.pt")
 
 from pynvml import *
 nvmlInit()

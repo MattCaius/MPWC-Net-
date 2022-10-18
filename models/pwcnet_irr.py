@@ -48,8 +48,8 @@ class PWCNet(nn.Module):
 
     def forward(self, input_dict):
 
-        x1_raw = input_dict['input1']
-        x2_raw = input_dict['input2']
+        x1_raw = input_dict[0]
+        x2_raw = input_dict[1]
         _, _, height_im, width_im = x1_raw.size()
 
         # on the bottom level are original images
@@ -57,7 +57,6 @@ class PWCNet(nn.Module):
         x2_pyramid = self.feature_pyramid_extractor(x2_raw) + [x2_raw]
 
         # outputs
-        output_dict = {}
         flows = []
 
         # init
@@ -102,16 +101,13 @@ class PWCNet(nn.Module):
                 break
 
 
-        output_dict['flow'] = flows
-        output_dict['x2'] = x2_warp
-        output_dict['x1'] = x1
+        output = flows
 
         if self.training:
-            return output_dict
+            return output
         else:
-            output_dict_eval = {}
-            output_dict_eval['flow'] = upsample2d_as(flow, x1_raw, mode="bilinear") * (1.0 / self._div_flow)
-            return output_dict_eval
+            output_eval = upsample2d_as(flow, x1_raw, mode="bilinear") * (1.0 / self._div_flow)
+            return output_eval
 
 
 class MPWCNet(nn.Module):
@@ -147,8 +143,8 @@ class MPWCNet(nn.Module):
 
     def forward(self, input_dict):
 
-        x1_raw = input_dict['input1']
-        x2_raw = input_dict['input2']
+        x1_raw = input_dict[0]
+        x2_raw = input_dict[1]
         _, _, height_im, width_im = x1_raw.size()
 
         # on the bottom level are original images
@@ -156,7 +152,6 @@ class MPWCNet(nn.Module):
         x2_pyramid = self.feature_pyramid_extractor(x2_raw) + [x2_raw]
 
         # outputs
-        output_dict = {}
         flows = []
 
         # init
@@ -201,14 +196,11 @@ class MPWCNet(nn.Module):
                 break
 
 
-        output_dict['flow'] = flows
-        output_dict['x2'] = x2_warp
-        output_dict['x1'] = x1
+        output = flows
 
         if self.training:
-            return output_dict
+            return output
         else:
-            output_dict_eval = {}
-            output_dict_eval['flow'] = upsample2d_as(flow, x1_raw, mode="bilinear") * (1.0 / self._div_flow)
-            return output_dict_eval
+            output_eval = upsample2d_as(flow, x1_raw, mode="bilinear") * (1.0 / self._div_flow)
+            return output_eval
 
