@@ -189,7 +189,7 @@ def get_grid(x):
     grid_H = torch.linspace(-1.0, 1.0, x.size(3)).view(1, 1, 1, x.size(3)).expand(x.size(0), 1, x.size(2), x.size(3))
     grid_V = torch.linspace(-1.0, 1.0, x.size(2)).view(1, 1, x.size(2), 1).expand(x.size(0), 1, x.size(2), x.size(3))
     grid = torch.cat([grid_H, grid_V], 1)
-    grids_cuda = grid.float().requires_grad_(False).cuda()
+    grids_cuda = grid.float().requires_grad_(False).cpu()
     return grids_cuda
 
 
@@ -207,7 +207,7 @@ class WarpingLayer(nn.Module):
         grid = torch.add(get_grid(x), flow_for_grid).transpose(1, 2).transpose(2, 3)        
         x_warp = tf.grid_sample(x, grid)
 
-        mask = torch.ones(x.size(), requires_grad=False).cuda()
+        mask = torch.ones(x.size(), requires_grad=False).cpu()
         mask = tf.grid_sample(mask, grid)
         mask = (mask >= 1.0).float()
 
